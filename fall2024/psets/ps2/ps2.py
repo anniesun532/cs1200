@@ -61,7 +61,7 @@ class BinarySearchTree:
         if left_size > ind and self.left is not None:
             return self.left.select(ind)
         if left_size < ind and self.right is not None:
-            return self.right.select(ind)
+            return self.right.select(ind-left_size-1)
         return None
 
 
@@ -91,15 +91,16 @@ class BinarySearchTree:
     def insert(self, key):
         if self.key is None:
             self.key = key
-        elif self.key > key: 
+        elif self.key >= key:
+            self.size += 1
             if self.left is None:
                 self.left = BinarySearchTree(self.debugger)
             self.left.insert(key)
         elif self.key < key:
+            self.size += 1
             if self.right is None:
                 self.right = BinarySearchTree(self.debugger)
             self.right.insert(key)
-        self.calculate_sizes()
         return self
 
     
@@ -128,6 +129,41 @@ class BinarySearchTree:
     '''
     def rotate(self, direction, child_side):
         # Your code goes here
+        x = None
+        y = None
+        if child_side == "R":
+            x = self.right
+        elif child_side == "L":
+            x = self.left
+        if direction == "R":
+            y = x.left
+            b = y.right
+            y.right = x
+            x.left = b
+
+            y.size = x.size
+            x.size = 1 
+            if b is not None:
+                x.size += b.size
+            if x.right is not None:
+                x.size += x.right.size
+        elif direction == "L":
+            # rotate
+            y = x.right
+            b = y.left
+            y.left = x
+            x.right = b
+
+            y.size = x.size
+            x.size = 1 
+            if b is not None:
+                x.size += b.size
+            if x.right is not None:
+                x.size += x.right.size
+        if child_side == "R":
+            self.right = y
+        elif child_side == "L":
+            self.left = y
         return self
 
     def print_bst(self):
