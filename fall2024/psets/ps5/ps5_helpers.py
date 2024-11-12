@@ -1,5 +1,6 @@
 import numpy as np
 import signal
+import threading
 
 COLORS = ["BLUE", "GREEN", "RED", "YELLOW", "ORANGE", "PINK",
             "BLACK", "BROWN", "WHITE", "PURPLE"]
@@ -11,10 +12,11 @@ class timeout:
     def handle_timeout(self, signum, frame):
         raise TimeoutError(self.error_message)
     def __enter__(self):
-        signal.signal(signal.SIGALRM, self.handle_timeout)
-        signal.alarm(self.seconds)
+        self.timer = threading.Timer(self.seconds, self.handle_timeout)
+        self.timer.start()
     def __exit__(self, type, value, traceback):
-        signal.alarm(0)
+        if self.timer:
+            self.timer.cancel()
 class color:
    PURPLE = '\033[95m'
    CYAN = '\033[96m'

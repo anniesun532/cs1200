@@ -167,9 +167,36 @@ def bfs_2_coloring(G, precolored_nodes=None):
     
     # TODO: Complete this function by implementing two-coloring using the colors 0 and 1.
     # If there is no valid coloring, reset all the colors to None using G.reset_colors()
-    
-    G.reset_colors()
-    return None
+    BFS_list = []
+    i = 0
+    while len(BFS_list) < G.N - len(visited):
+        for node in range(0,G.N):
+            if node not in BFS_list and node not in visited:
+                BFS_list.append(node)
+                break
+        while i < len(BFS_list):
+            nodei = BFS_list[i]
+            for node in G.edges[nodei]:
+                if node not in BFS_list and node not in visited:
+                    BFS_list.append(node)
+            i += 1
+        
+    for i in range(0,len(BFS_list)):
+        nodei = BFS_list[i]
+        colors = set()
+        for j in range(0,i):
+            nodej = BFS_list[j]
+            if nodej in G.edges[nodei]:
+                colors.add(G.colors[nodej])
+        if len(colors) > 1:
+            G.reset_colors()
+            return None
+        elif 0 in colors:
+            G.colors[nodei] = 1
+        else:
+            G.colors[nodei] = 0         
+       
+    return G.colors
 
 
 
@@ -187,7 +214,15 @@ def bfs_2_coloring(G, precolored_nodes=None):
 # If no coloring is possible, resets all of G's colors to None and returns None.
 def iset_bfs_3_coloring(G):
     # TODO: Complete this function.
-
+    for iset in get_maximal_isets(G):
+        #do_something_with_iset(iset)
+        precolored_nodes = []
+        for v in iset:
+            precolored_nodes.append(v)
+        result = bfs_2_coloring(G, precolored_nodes)
+        if result:
+            return result 
+        
     G.reset_colors()
     return None
 
